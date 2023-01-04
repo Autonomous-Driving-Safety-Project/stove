@@ -10,6 +10,14 @@ services:
       - NVIDIA_DRIVER_CAPABILITIES=compute,video,graphics,utility,display
     tty: true
     stdin_open: true
+    working_dir: /home/ustc
+    volumes:
+      - home:/home/ustc
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: ["gpu"]
   novnc:
     image: dougw/novnc
     container_name: novnc
@@ -18,3 +26,5 @@ services:
     environment:
       - REMOTE_HOST=stove
       - REMOTE_PORT=5900
+volumes:
+  home:
