@@ -1,0 +1,11 @@
+version: '3'
+services:
+  stove:
+    image: test
+    ports:
+      - 15002:22
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+    tty: true
+    stdin_open: true
