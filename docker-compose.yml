@@ -9,3 +9,13 @@ services:
       - NVIDIA_VISIBLE_DEVICES=all
     tty: true
     stdin_open: true
+    working_dir: /home/ustc
+    volumes:
+      - home:/home/ustc
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: ["gpu"]
+volumes:
+  home:
