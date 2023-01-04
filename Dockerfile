@@ -1,22 +1,32 @@
-FROM nvidia/cuda:11.4.2-cudnn8-runtime-ubuntu18.04
+FROM violinwang/stove:ubuntu18.04-cuda11.4-base
 
 ARG username=ustc
 ARG password=1234
 
-RUN sed -i 's/archive.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list && apt-get update
-RUN apt-get install -y sudo curl wget git libopenmpi-dev openssh-server
-RUN useradd --create-home --no-log-init --shell /bin/bash ${username} \
-    && adduser ${username} sudo \
-    && echo "${username}:${password}" | chpasswd
-RUN mkdir /var/run/sshd
-EXPOSE 22
-WORKDIR /home/${username}
-USER ${username}
-RUN curl -O https://mirrors.tuna.tsinghua.edu.cn/anaconda/miniconda/Miniconda3-py39_4.12.0-Linux-x86_64.sh \
-    && sh Miniconda3-py39_4.12.0-Linux-x86_64.sh -b -p ~/.miniconda3 \
-    && rm Miniconda3-py39_4.12.0-Linux-x86_64.sh \
-    && ~/.miniconda3/bin/conda init
-WORKDIR /root
-USER root
 ENV WORKUSER=${username}
-CMD ["/bin/bash", "-c", "PASSWD=`cat /proc/sys/kernel/random/uuid | md5sum |cut -c 1-9` && echo Password of $WORKUSER is $PASSWD && echo \"${WORKUSER}:${PASSWD}\" | chpasswd && /usr/sbin/sshd -D"]
+ENV LANG=en_US.UTF-8
+ENV TZ=Asia/Shanghai
+ENV DISPLAY=:0
+ENV GEOMETRY=1024x768x24
+USER root
+
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive \
+    apt-get install -y --no-install-recommends \
+    libgl1-mesa-glx libgl1-mesa-dri libglu1-mesa libegl1-mesa libxv1 x11vnc xvfb jwm curl && \
+    rm -rf /var/lib/apt/lists/*
+# install virtualgl
+RUN curl -O https://nchc.dl.sourceforge.net/project/virtualgl/3.0.2/virtualgl_3.0.2_amd64.deb && \
+    dpkg -i virtualgl_3.0.2_amd64.deb && \
+    vglserver_config +glx +s +f +t && \
+    rm virtualgl_3.0.2_amd64.deb
+# Tidy up JWM for single app use case
+RUN sed -i "s/Desktops width=\"4\"/Desktops width=\"1\"/g" /etc/jwm/system.jwmrc && \
+    sed -i "s/<TrayButton icon=\"\/usr\/share\/jwm\/jwm-red.svg\">root:1<\/TrayButton>//g" /etc/jwm/system.jwmrc && \
+    sed -i "s/<TrayButton label=\"_\">showdesktop<\/TrayButton>//g" /etc/jwm/system.jwmrc && \
+    sed -i "s/<Include>\/etc\/jwm\/debian-menu<\/Include>//g" /etc/jwm/system.jwmrc && \
+    mkdir /tmp/.X11-unix && \
+    chmod 1777 /tmp/.X11-unix
+RUN echo '#!/bin/bash\nPASSWD=`cat /proc/sys/kernel/random/uuid | md5sum |cut -c 1-6`\necho "${WORKUSER}:${PASSWD}" | chpasswd\necho Password of $WORKUSER is $PASSWD\nXvfb $DISPLAY -screen 0 $GEOMETRY -cc 4 & \nsleep 0.5\njwm &\nx11vnc -forever -nopw -q -bg' > /usr/local/bin/startup.sh && \
+    chmod +x /usr/local/bin/startup.sh
+
+CMD /usr/local/bin/startup.sh && /usr/sbin/sshd -D

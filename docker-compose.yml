@@ -1,11 +1,20 @@
 version: '3'
 services:
   stove:
-    image: test
+    image: violinwang/stove:ubuntu18.04-cuda11.4-vnc
     ports:
-      - 15002:22
+      - 15000:22
     runtime: nvidia
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,video,graphics,utility,display
     tty: true
     stdin_open: true
+  novnc:
+    image: dougw/novnc
+    container_name: novnc
+    expose:
+      - 8081
+    environment:
+      - REMOTE_HOST=stove
+      - REMOTE_PORT=5900
