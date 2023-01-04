@@ -19,4 +19,4 @@ RUN curl -O https://mirrors.tuna.tsinghua.edu.cn/anaconda/miniconda/Miniconda3-p
 WORKDIR /root
 USER root
 ENV WORKUSER=${username}
-CMD ["/bin/bash", "-c", "PASSWD=`cat /proc/sys/kernel/random/uuid | md5sum |cut -c 1-9` && echo Password of $WORKUSER is $PASSWD && echo \"${WORKUSER}:${PASSWD}\" | chpasswd && /usr/sbin/sshd -D"]
+CMD ["/bin/bash", "-c", "PASSWD=`cat /proc/sys/kernel/random/uuid | md5sum |cut -c 1-6` && echo Password of $WORKUSER is $PASSWD && echo \"${WORKUSER}:${PASSWD}\" | chpasswd && /usr/sbin/sshd -D"]
