@@ -1,7 +1,7 @@
 version: '3'
 services:
   stove:
-    image: violinwang/stove:ubuntu18.04-cuda11.4-vnc
+    image: violinwang/stove:ubuntu18.04-cuda11.4-vnc-xfce
     ports:
       - 15000:22
     runtime: nvidia
@@ -19,11 +19,11 @@ services:
           devices:
             - capabilities: ["gpu"]
   novnc:
-    image: dougw/novnc
-    container_name: novnc
+    image: violinwang/novnc
     expose:
-      - 8081
+      - 8080
     environment:
+      - LISTEN_PORT=8080
       - REMOTE_HOST=stove
       - REMOTE_PORT=5900
 volumes:
