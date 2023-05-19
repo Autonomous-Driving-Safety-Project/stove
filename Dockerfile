@@ -1,4 +1,4 @@
-FROM violinwang/stove:ubuntu18.04-cuda11.4-base
+FROM violinwang/stove:ubuntu18.04-cuda10.2-base
 
 ARG username=ustc
 ARG password=1234
