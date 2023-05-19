@@ -14,7 +14,7 @@ USER root
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive \
     apt-get install -y --no-install-recommends \
-    libgl1-mesa-glx libgl1-mesa-dri libglu1-mesa libegl1-mesa libxv1 x11vnc xvfb dbus-x11 xfce4-session xfce4-goodies xfwm4 xfdesktop4 xorg x11-xserver-utils curl && \
+    libgl1-mesa-glx libgl1-mesa-dri libglu1-mesa libegl1-mesa libxv1 x11vnc xvfb dbus-x11 xfce4-session xfce4-goodies xfwm4 xfdesktop4 xorg x11-xserver-utils at-spi2-core curl && \
     rm -rf /var/lib/apt/lists/*
 # install virtualgl
 RUN curl -O https://nchc.dl.sourceforge.net/project/virtualgl/3.0.2/virtualgl_3.0.2_amd64.deb && \
