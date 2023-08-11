@@ -1,7 +1,13 @@
-FROM nvidia/cuda:11.4.2-cudnn8-runtime-ubuntu18.04
+FROM nvidia/cuda:11.5.2-cudnn8-devel-ubuntu20.04
 
 ARG username=ustc
 ARG password=1234
+
+ENV LANGUAGE="en_US.UTF-8"
+ENV LANG=en_US.UTF-8
+ENV LC_ALL=en_US.UTF-8
+ENV TZ=Asia/Shanghai
+ENV DEBIAN_FRONTEND=noninteractive
 
 RUN sed -i 's/archive.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list
 RUN apt-get update && apt-get install -y sudo curl wget git libopenmpi-dev openssh-server libpng16-16 libjpeg8 libtiff5 libsm6 libxext6 libxrender1
