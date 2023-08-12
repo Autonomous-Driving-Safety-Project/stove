@@ -1,7 +1,7 @@
 version: '3'
 services:
   stove:
-    image: violinwang/stove:ubuntu18.04-cuda11.4-vnc-xfce
+    image: violinwang/stove:ubuntu20.04-cuda11.5-vnc-xfce
     ports:
       - 15000:22
     runtime: nvidia

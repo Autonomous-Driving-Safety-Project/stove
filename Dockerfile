@@ -1,4 +1,4 @@
-FROM violinwang/stove:ubuntu18.04-cuda11.4-base
+FROM violinwang/stove:ubuntu20.04-cuda11.5-base
 
 ARG username=ustc
 ARG password=1234
@@ -17,14 +17,14 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive \
     libgl1-mesa-glx libgl1-mesa-dri libglu1-mesa libegl1-mesa libxv1 x11vnc xvfb dbus-x11 xfce4-session xfce4-goodies xfwm4 xfdesktop4 xorg x11-xserver-utils at-spi2-core curl && \
     rm -rf /var/lib/apt/lists/*
 # install virtualgl
-RUN curl -O https://nchc.dl.sourceforge.net/project/virtualgl/3.0.2/virtualgl_3.0.2_amd64.deb && \
-    dpkg -i virtualgl_3.0.2_amd64.deb && \
+RUN curl -O https://udomain.dl.sourceforge.net/project/virtualgl/3.1/virtualgl_3.1_amd64.deb && \
+    dpkg -i virtualgl_3.1_amd64.deb && \
     vglserver_config +glx +s +f +t && \
-    rm virtualgl_3.0.2_amd64.deb
+    rm virtualgl_3.1_amd64.deb
 # Tidy up JWM for single app use case
 RUN mkdir /tmp/.X11-unix && \
     chmod 1777 /tmp/.X11-unix
-RUN echo '#!/bin/bash\nPASSWD=`cat /proc/sys/kernel/random/uuid | md5sum |cut -c 1-6`\necho "${WORKUSER}:${PASSWD}" | chpasswd\necho Password of $WORKUSER is $PASSWD\nXvfb $DISPLAY -screen 0 $GEOMETRY -cc 4 & \nsleep 0.5\nrm -f /tmp/.X0-lock\nsu - ustc -c "startxfce4 &"\nx11vnc -forever -nopw -q -bg' > /usr/local/bin/startup.sh && \
+RUN echo '#!/bin/bash\nPASSWD=`cat /proc/sys/kernel/random/uuid | md5sum |cut -c 1-6`\necho "${WORKUSER}:${PASSWD}" | chpasswd\necho Password of $WORKUSER is $PASSWD\nXvfb $DISPLAY -screen 0 $GEOMETRY -cc 4 & \nsleep 0.5\nrm -f /tmp/.X0-lock\nsu ${WORKUSER} -c "startxfce4 &>/home/${WORKUSER}/.xfce4.log &"\nx11vnc -forever -nopw -q -bg' > /usr/local/bin/startup.sh && \
     chmod +x /usr/local/bin/startup.sh
 
 CMD /usr/local/bin/startup.sh && /usr/sbin/sshd -D
